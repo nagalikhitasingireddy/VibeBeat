@@ -1,25 +1,61 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Music Visualizer</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LyricFlow — Music Visualizer</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@600;800&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Visual layers -->
+  <canvas id="bgCanvas" class="bg-canvas"></canvas>   <!-- gradient + subtle noise -->
+  <canvas id="sparkleCanvas" class="bg-canvas"></canvas> <!-- sparkles/particles -->
+  <div id="overlay" class="overlay"></div> <!-- gradient overlay / blur -->
 
-  <div class="container">
-    <h1 class="song-title">🎵 Ed Sheeran – Perfect</h1>
+  <!-- Main UI -->
+  <main class="app">
+    <header class="header">
+      <h1 class="title">LyricFlow</h1>
+      <p class="subtitle">A beat-reactive lyric visualizer</p>
+    </header>
 
-    <div class="player">
-      <audio id="audio" src="perfect.mp3" controls></audio>
-    </div>
+    <section class="player-card">
+      <div class="info">
+        <div class="cover-placeholder">🎵</div>
+        <div class="meta">
+          <div id="songTitle" class="song-title">Ed Sheeran — Perfect</div>
+          <div id="songArtist" class="song-artist">Demo Track</div>
+        </div>
+      </div>
 
-    <div id="lyrics" class="lyrics"></div>
-  </div>
+      <div class="controls">
+        <audio id="audio" src="assets/audio/perfect.mp3" crossorigin="anonymous"></audio>
+        <div class="btn-row">
+          <button id="playBtn" class="btn">Play</button>
+          <button id="pauseBtn" class="btn subtle">Pause</button>
+          <select id="speed" class="speed">
+            <option value="1">1x</option>
+            <option value="1.25">1.25x</option>
+            <option value="0.9">0.9x</option>
+          </select>
+        </div>
+      </div>
 
-  <canvas id="visualizer"></canvas>
+      <div class="lyric-wrapper">
+        <div id="pulse" class="pulse"></div>
+        <div id="lyric" class="lyric-line"></div>
+      </div>
+    </section>
 
-  <script src="script.js"></script>
+    <footer class="footer">
+      <small>Built with ❤️ — add your own songs in <code>assets/</code></small>
+    </footer>
+  </main>
+
+  <script src="script.js" defer></script>
 </body>
 </html>
