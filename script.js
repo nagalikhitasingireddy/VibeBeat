@@ -17,16 +17,14 @@ const lyrics = [
   { time: 33, text: "I never knew you were the someone waiting for me" }
 ];
 
-// 🌈 Beat visualizer setup
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-const source = audioContext.createMediaElementSource(audio);
-const analyser = audioContext.createAnalyser();
-source.connect(analyser);
-analyser.connect(audioContext.destination);
+// 🎶 Variables
+let audioContext;
+let analyser;
+let dataArray;
+let currentLine = 0;
+let animationStarted = false;
 
-const dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-// ✨ Sparkle effect setup
+// ✨ Sparkle setup
 let sparkles = [];
 function createSparkle() {
   return {
@@ -55,11 +53,23 @@ function drawSparkles() {
   });
 }
 
-// 🎶 Beat detection + lyric sync
-let currentLine = 0;
+// 🧠 Initialize audio context only when needed
+function setupAudioAnalyser() {
+  if (audioContext) return; // already set up
+  audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const source = audioContext.createMediaElementSource(audio);
+  analyser = audioContext.createAnalyser();
+  analyser.fftSize = 256;
+  source.connect(analyser);
+  analyser.connect(audioContext.destination);
+  dataArray = new Uint8Array(analyser.frequencyBinCount);
+}
 
+// 🎵 Main animation loop
 function animate() {
   requestAnimationFrame(animate);
+  if (!analyser) return;
+
   analyser.getByteFrequencyData(dataArray);
   const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
   const beat = average / 150;
@@ -73,16 +83,30 @@ function animate() {
     setTimeout(() => {
       lyricsEl.textContent = lyrics[currentLine].text;
       lyricsEl.style.opacity = 1;
-    }, 300);
+    }, 200);
     currentLine++;
   }
 }
 
-animate();
-
-// Resume AudioContext after user interaction
-document.body.addEventListener('click', () => {
+// 🎧 Handle play event
+audio.addEventListener('play', async () => {
+  setupAudioAnalyser();
   if (audioContext.state === 'suspended') {
+    await audioContext.resume();
+  }
+
+  // Delay animation start slightly for smoother sync
+  if (!animationStarted) {
+    setTimeout(() => {
+      animate();
+      animationStarted = true;
+    }, 300);
+  }
+});
+
+// Resume audio context on first click (browser policy)
+document.body.addEventListener('click', () => {
+  if (audioContext && audioContext.state === 'suspended') {
     audioContext.resume();
   }
 });
